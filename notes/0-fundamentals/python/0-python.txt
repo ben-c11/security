@@ -1,0 +1,10 @@
+3.41.10	 	Python start
+
+name .py - finish with & to allow terminal available after. e.g. script.py&
+
+start your script with a python she-bang; #!/bin/python3
+
+See document in other python lesson; this one picks up from: 4.50.20
+
+
+	#Advanced Strings - see python document in this folder

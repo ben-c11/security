@@ -1,0 +1,189 @@
+IP address
+MAC address
+TCP UDP & three way handshake
+Common ports and protocols
+OSI model
+Subnetting
+
+ifconfig:
+inet = ipv4 - made up of 32 bits (each part is 8 bits)
+2^32 = 4 billion possible IP addresses.
+
+inet6 = ipv6
+128 bits
+2^128 = LOTS
+
+Layer 3 = IP = routing
+
+
+
+How are we still using IPv4 if there is no address space anymore?
+NAT - network address translation: assinging private ips that link to your IP facing internet
+Anything starting with 192.168 likely private - not internet facing
+
+4 classes of IPs
+Class	Network num	network mask	No. Networks	No Hosts
+A	10.0.0.0	255.0.0.0	  126		16,646,144
+B	172.16.0.0 	
+	  to		255.255.0.0	  16,383	 65,024
+	172.31.0.0
+
+C	192.168.0.0
+	    to
+	192.168.255.255	 255.255.255.0	 2,097,151	 254
+
+Loopback 127.0.0.0
+	    to
+	 127.0.0.7	255.255.255.0
+	 
+Large corp use 10. addressess to have small no network but large no hosts, coversely 192.168 is private home netowrk/small business, large no networks but small no hosts.
+
+
+
+		MAC Addresses
+		
+In linux, it's called the ether in ifconfig. Physical address. NIC has MAC address
+
+Layer 2 - switching
+
+eg 00:0c:29:0a:42:05
+6 pairs of 2
+
+Take first 3 pairs and can go to MAC lookup
+
+
+
+
+
+57:45		TCP UDP & three way handshake
+
+Layer 4 - Transport layer
+
+TCP vs UDP
+
+Transmission control procol vs 		User Datagram Protocol
+(Connection protocol)			(conectionless protocol)
+- High reliabilty 			VOIP, streaming, DNS
+website/ HTTPS, HTTP, ftp ssh
+
+Scan both these protocols - TCP is most common
+
+TCP works in a 3 way handshake:
+Send SYN packet, receive SYN ACK > send ACK packet
+	hi		acknowledge	start covo (connect to port)
+	
+port 443 - webpage
+
+
+
+
+
+1:03:00		Common ports and protocols 
+
+
+TCP						UDP
+21 - FTP					DNS 53
+22 SSH						DHCP 67, 68	  
+23 TELNET					TFTP 69
+25 SMTP						SNMP 161
+53 DNS
+80 HTTP/HTTPS 443
+POP3 110
+SMB 139 + 445
+IMAP 143
+
+ftp - file transfer protocol. get file off server.
+telnet - able to log into machine remotely. All cleartext
+Ssh - encrypted version of telnet
+SMTP pop3 imap - all mail related
+DNS - relsove ip addresses to name
+HTTP/HTTPS - websites secure n not
+SMB - later versions include 445. File shares SAMBA - pentesters like these (wanacry virus MS17-010 - eternal) Opened frequently
+
+DNS in udp is both protocols
+DHCP - associates you with an IP address dynamically from a pool for x amount of time, static ip assignment
+TFTP - trivial file transfer protocol using udp instead of tcp
+SNMP - simple network management protocol
+
+
+
+
+1:09:00			OSI Model
+
+1 Physical - data cables, CAT6			Please
+2 Data - Switching, MAC addresses		Do
+3 Network - IP, routing				Not
+4 Transport - TCP/UDP				Throw
+5 Session - Session Management			Sweetcorn
+6 Presentation - WMV, JPEG, MOV (media!)	Pizza
+7 Application - HTTP, SMTP			Away
+
+Why important?
+When data is sent, it moves from the physical to the application layer. When received, it goes from application to the physical.
+When troubleshooting start at physical 
+
+
+
+1:14:40			Subnetting part 1
+
+ifconfig - netmask = subnet 255.255.255.0 /24 network
+/24 is the number of bits i.e. number of 1's across the whole thing
+
+Subnet all bits 8bits (ones n zeros!)
+
+128 64 32 16 8 4 2 1
+1    1  1 1  1 1 1 1	= 255 		(all x4 for x.x.x.x octet)
+
+Subnetting fills up the bits similar to IP but MUST fill from the top-most bits i.e 128 down and never randomly or from bottom
+
+
+Host 2^8 goes down by one power when a 1 is filled in which reduces the number of hosts. 
+The amount of devices on your private network is governed by the subnet mask 256 = 2^8 = common for houses or small business
+
+Possiblity of 32 bits
+
+Hosts  128  64  32  16   8   4   2   1
+Subnet 128  192 224 240 248 252 254 255
+
+bits  subnet
+8     255.0.0.0
+16    255.255.0.0
+24    255.255.255.0
+32    255.255.255.255
+
+Cheat sheet pls - 1.27.00
+
+Larger company needs lower than /24 so /16 or /8 or /11.
+Companies can have subnetted sub networks to allow for e.g. telephone site
+
+Subtract 2 from hosts to get real number.
+
+ifconfig
+Network ID 	start of 192.168.1.0 (first address)
+Broadcast IP	end of 192.168.1.255  (last address)
+		
+		Subnet	       Hosts    Network       Broadcast
+192.168.1.0/24 255.255.255.0    254    192.168.1.0   192.168.1.255
+192.168.1.0/28 255.255.255.240  14     192.168.1.0   192.168.1.15
+192.168.1.16/28 255.255.255.240 14     192.168.1.16  192.168.1.31
+192.168.0.0/23 255.255.254.0    510    192.168.0.0  192.168.1.255
+^Not .1.0
+Why no 1 and why IP 1?? -- becasuse 255*2 = 510.
+you have 192.168.0.0 - 192.168.0.255 AND
+	 192.168.1.0 - 192.168.1.255
+	 
+192.168.2.0/23 255.255.254.0    510    192.168.2.0   192.168.3.255
+
+IP address guide.com CIDR to IPv4 conversion
+7seond subnetting for alt source
+
+     IP		Subnet	      Hosts    Network        Broadcast
+192.168.0.0/23 255.255.254.0   510    192.168.0.0    192.168.1.255
+192.168.2.0/23 255.255.254.0   510    192.168.2.0    192.168.3.255
+
+pt 2 1.41.48
+
+192.168.0.0/22 255.255.252.0   1022   192.168.0.0    192.168.3.255
+192.168.1.0/26 255.255.255.192 62     192.168.1.0    192.168.1.63
+192.168.1.0/27 255.255.255.224 30     192.168.1.0    192.168.1.31
+

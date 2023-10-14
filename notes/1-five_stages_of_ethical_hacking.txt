@@ -1,0 +1,116 @@
+
+#6.22.30 Five stages of ethical hacking
+
+Reconnaissance - Active & Passive:
+  Passive: LinkedIn, Googling them, FB
+  Active: Scanning & enumeration; use tools to get stuff
+  
+Scanning and Enumeration:
+  Nmap, Nessus, Nikto
+  Actively scan against a client; open ports, vulnerabilities
+  - Enum: looking at items and trying to find ones with value, e.g. web server on port 80 running apache 1.2 (old software) and then find exploits regarding that software
+  
+  
+Gaining Access (Exploitation)
+  - Run exploit to gain access to a network or machine.
+  - Also scan and enumerate more
+
+
+Maintaining Access
+ - Afer PC turned off or network down, how can we still be persistent?
+ 
+ 
+ Covering Tracks
+ - Delete logs and any malware you used, any accounts created. Cleaning up
+ 
+ 
+ 
+ 
+	## 6.27.50 Passive Recon
+
+Physical/Social - Physical going on site, social - phising, vishing (voice scam to get info), smishing (texts SMS), spear phishing (highly personalised phising attempt)
+
+ - Local information: drone recon, satellite images, buidling layout(badge readers, smoking areas, security, fencing
+ - Job information: Employees (name, job title, phone number, manager); pictures(badge photos, desk photos, computer photos)
+ 
+ 
+Web/Host assessment:
+
+  Target validation - validate the correct target so u don't attack another IP address by accident! WHOIS, nslookup, dnsrecon.
+  Finding subdomains - Google Fu, dig, nmap, sublist3r, Bluto, crt.sh 
+  Fingerprinting - What web servers are they running, what ports are open, what are they running on those ports? FTP? What version of FTP...: Nmap, Wappalyzer, WhatWeb, BuiltWith, NetCat
+  Data Breahes: Past incidents that have leaked info for companiesL HaveIBeenPwned, Breach-Parse, WeLeakInfo
+  
+  
+	6.35.20 Identifying target
+Use bugcrowd as a client; bug bounty 
+
+Bugcrowd.com > Programs 
+
+Check rules of engagements - Don't exceed these; Stay within the scope!!!!
+
+
+	6.39.08	Discovering Email addresses
+	
+Email OSINT - trying to find someone's email address and the format, maybe make an educated guess
+
+Hunter.io - type in company name; identifies an email pattern - sign in gmail.
+
+phonebook.cz - listsdomains, emails and URLs: use these with credential stuffing or trying these against passwords
+
+Voilanorbet.com - similar to hunter.io
+
+Clearbit connect - used in chrome (or use extension) - discovers stuff u might not see anywhere else! Finds stuff from linkedIn
+
+
+- Typically Google search a person, or company; verify the email u found or approximated - use emailhippo to verify or email-checker.net
+
+
+6.52.30 - Don't underestimate forgot passwords:
+
+Try g-email address and see if it's validated by trying to sign in. Try forgot password to h*****@tc****.com; try find an email with these credentials.
+
+
+
+
+
+////////////////////////////////////////////////////////////////////
+6.55.00- Password OSINT: Gathering breached credentials: BreachParse
+
+
+Go to Github.com/maverickadams
+ - 44GB big file! Can download but don't need to!
+ - download to /opt in Kali
+ 
+ Data file in BP (breachParse) file; Hundreds of files, BP searches through all the breached data. Read README to find out how to use and check out code.
+ 
+ 6.58.00
+ cd /opt/breach-parse
+ ./breach-parse.sh @tesla.com telsa.txt
+ 
+ - Going to grab any credentials with @tesla.com domain in the database and return them along with the passwords.
+ Program breaks it down to 3 files: password file, username file and master file with both in.
+ Look for repeat offenders - check and see if it's the same pattern as you noticed from before e.g. firstname.lastname@domain.com
+ - You can try credential stuffing on a tesla login page; credential stuffing = trying out passwords found, i.e. you already 'know' the password. Try make mods in capitalisation in text.
+ - Password spraying: trying all of the known usernames/emails and trying passwords against them
+ 
+ 
+ 
+	
+	7.02.20 	Hunting Breached Credentials
+	
+
+Retain methodology! Dw about a single website being taken down!
+Dehashed.com - costs money!
+
+Can search via email, phone, domain, name, username, IP, VIN, password! If password is unique then u can narrow it down to an account; if that unique password is tied to another account then u can see their personal account - or other tied account! 
+Trying to relate other accounts together!!
+
+- Dehash password? Try to link email found; take note of all emails and passwords. Try the passwords and link to other accounts!
+- Try the hash, maybe it's been broken before.
+
+	
+7.11.35 Hashes.org
+Can try to crack a hash! Or just try Google.
+Adobe Database also mebs has breached hash info. 
+

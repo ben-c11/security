@@ -1,0 +1,218 @@
+cd - change directory
+ls - list directory
+ls -a  - list all
+mkdir, rmdir - make/remove directory
+
+Explainshell.com
+
+man <cmd> explains cmd better than --help
+
+echo 'Hi2' > test.txt - make file called test.txt and put hi2 in there. Cat test.txt to print.
+
+cp - copy
+rm- remove file
+mv - move
+locate <file name> - find file path to the file you desire. If not working you might need to use 'updatedb' cmd to update the database. (root needed)
+
+passwd - change password ( he uses password)
+
+
+
+2.28.25 	Common Network Cmds
+
+ls -a - colour coded files (blue = dir, light blue = links)
+
+d rwx r-x r-x ---> directory, owner: read, write, execute; 
+group permissions to this file, read, execute; 
+all other users: same. 
+/tmp folder can allow us to read/write/executable!
+
+chmod +x - change mode: make executable: +rwx also works. <cmd> 777 also does this for all users! You can use chmod numbers to give different permissions.
+
+-----
+sudo adduser - adds new user   User password - john: robert1 2.37.
+
+su - switch user
+
+sudo su - = change to root!
+
+cat etc/passwd (print password folder in (etsy folder)) - also has important info on the types of services running on PC such as VPN, SSH, servers, sql, mysql, postresql etc as well as displaying the users on this machine.
+
+cat etc/shadow - prints file containing password hashes for users
+cat etc/shadow
+Don't set root password. User user account and elevate to sudo so u can see logs
+
+Hashing algo in Linux, two users with the same password have different hashes. In Windows, this is not the case, same pass = same hash
+
+sudo cat /etc/sudoers = print f
+
+grep = pull out a specific string or element out of a files
+
+
+grep 'sudo' /etc/group = get name of users who have sudo priviledge 
+
+sudo -l  = lists what user can run with sudo privileges
+
+
+
+
+2.45.20 	Users and Privileges
+
+
+sudo su - = change to root!
+
+networking cmds relevant to hacking
+
+ - ip a  = iplist all; gives ipv4, ipv6, mac(ether), broadcast, subnet - newer way of doing it; can still use ifconfig (might not be on machine... or ip a might not be.
+
+ifconfig shows only wired connections; iwconfig shows wireless 
+
+ - ip n = neighbour; equivalent of arp -a
+
+arp (address resolution prototcol) - associates MAC address to an IP address (Look into this)
+
+ - ip r = route; route cmd gives same info; gies routing table. Allows for you to see other networks you can communicate with from your current network. How to add and remove routes is important skill! (Look into this) 2.51.14
+ 
+ 
+ - ping (your gateway should give ping) - this gives a forever ping. ICMP traffic - not all machines can use ICMP traffic - or have it enabled; just because we ping does not mean that something is online
+ using pinsweeping to id open IPs
+ 
+ - netstat = ID open ports and services
+ 
+ 
+ 
+ 
+ 2.54.00 	Viewing, Creating, Editing files
+ 
+ 
+echo "text" > hello.txt Makes file called hellp.txt and includes the string text.
+
+echo "more text" >> hello.txt = Append to hello.txt w/o overwriting
+
+ - touch newfile.txt = makes newfile.txt - use terminal editor; vi/vim, nano or gedit or mousepad! 
+ 
+Also make a new file with nano; e.g. 
+ - nano newfilehere.txt = goes into text editor
+ 
+ 
+
+ 
+ 
+3.00.20 	Starting, Stopping, Servies
+
+
+
+Have sql, web server or starting service boot on launch. Tell our machine to do that.
+
+
+ - apache = host data via web server easily. Have malicious files or something for people to access.
+ ; ifconfig get your IP. put in web browser - nothing.
+ Now run cmd:
+ - sudo service apache2 start
+ now try again in browser and refresh (port 80! HTTP not HTTPS)
+ The service tells you where the files on the web page are found and where to replace them: /var/www/html folder
+ - sudo service apache2 stop  
+
+He uses python as his favourite way to get a web server 3.04.21
+
+ - python3 -m http.server 80 (use module http.server on port 80)
+ any files in the folder you're in is hosted
+ 
+ 
+ - systemctl = make service start on boot:
+ - sudo systemctl enable ssh (enable ssh) - bad security!! E.g. host apache2 server all the time.
+ 
+ 
+ 
+ 
+ 
+ 3.06.46	Installing & Updating tools
+ 
+ 
+ 
+sudo apt update && apt upgrade = update & upgrade! Might need root not just sudo; 'sudo su -'
+
+Tools can get broken v easily from updates! KEEP a clean backup of Kali just in case.
+
+3.12.00 - goes through installing pimpmykali to allow you to use git and to install tools from github:
+- When assessing how good a tool is, check the star rating (700 v reputable) and when last updated.
+- install a tool from github: sudo git clone HTTPS_link; first go to cd /opt (good place to install)
+
+ running pimp: sudo ./pimpmykali.sh in /ocp/pimpmykali; 
+ this tool cleans up kali to prevent it breaking so much!
+ 
+ First time new kali set up sudo ./pimpmykali.sh --> 'N' sets up a new machine for u; root was default user on kali before but 2021 it isn't so u need to accept this and NO to copy files
+ 
+
+
+
+3.18.55			Bash Scripting
+
+Find your IP address! Ifconfig/iwconfig - can use 192.168.57.1
+He uses 192.168.4.29 (if anything has this in, just sub it out) for another IP
+
+ping 192.168.4.29 -c 1 = one ping
+
+Put into text file. cat ping 192.168.4.29 -c 1 > ip.txt
+
+Extract the 64 bytes line... use grep!
+
+- cat ip.txt | grep "64 bytes" = pipes | run multiple cmds
+
+
+- cat ip.txt | grep "64 bytes" | cut -d " " -f 4
+cut cmd cuts out the info, -d = deliminer, cuts out on each " " space -f = field, 4; so four spaces; gives us just the IP address from the 64 bytes line: '192.168.4.29:'
+
+take colon off: easy way to take off is translate, tr.
+
+- c
+gives just IP.
+
+Now copy this all into nano/mousepad to make it into a  program
+
+
+		BASH SCRIPT 3.27.40
+./ipsweep.sh	- call program
+(we want to ping 192.168.4.x and loop thru so the $ip subs in the ip variable into the script and replaces it with that number in the sequence we're looping through; we can go one step further
+The 192.168.4 can be hardcoded in but to give it a little more flexibility, we can change it to $1 which means ARGUMENT no. 1; when running the script, we use ./ipsweep.sh and we can include an argument, it will sub that in to the program.)
+		for /24 network1
+#!/bin/bash
+
+for ip in `seq 1 254`; do
+ping -c 1 $1.$ip | grep "64 bytes" | cut -d " " -f 4 &
+done
+
+
+Now chmod +x ipsweep.sh!
+
+3.34.21
+If u just call it with no argument, it fricks up: add an if statmenet
+
+#!/bin/bash
+if [ "$1" == "" ]
+then
+echo "You forgot an IP address!"
+echo "Syntax: ./ipsweep.sh 192.168.4"
+
+else
+for ip in `seq 1 254`; do
+ping -c 1 $1.$ip | grep "64 bytes" | cut -d " " -f 4 &
+done
+fi
+
+fi finishes else
+3.36.23
+- & is swapped for ;. Doing ; means each iteration one at a time, & means do all at once. ; will hang on IPs that aren't open or not active so b v v slow.
+
+Now we can save it all into an ips.txt: 
+
+- ./ipsweep.sh > ips.txt 
+
+
+	one line statements 3.38
+
+
+nmap - can use to scan network; if we scan a whole network, e.g. 192.168.4.0 this can take some time while it finds out what is valid; we can instead do our sweep, collect IPs and set namp to run on that!!  
+
+In terminal:
+for ip in $(cap ips.txt); do nmap $ip& done 

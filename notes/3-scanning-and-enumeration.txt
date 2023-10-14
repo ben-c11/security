@@ -1,0 +1,231 @@
+	38.10 Scanning & Enumeration
+	
+Kioptrix level 1 VulnHub; tcm-sec.com/kioptrix instead
+
+47.00.00
+john TwoCows2
+Ip of kioptrix - 172.16.227.128
+
+arp-scan -l #look for VMWare
+
+
+Netdiscover 47.00.00
+
+Need our ip address in kali; run ifconfig
+192.168.57.4 	255.255.255.0
+
+
+netdiscover -r 192.168.57.0/24
+
+Ignore .1 and .2; therefore PCS Systemtechnik, 192.168.57.3 (close to ours) is the VM culprit.
+.134 = vid
+
+nmap (network mapper) - scans for open ports. It is meant to be stealthy, in the 3 way handshake of TCP connection (SYN SYNACK ACK) however it isn't stealthy now and you can be picked up. It carries out SYN receives ACK and nmap sends back RST instead to reset - never made a connection to port.
+
+	nmap -T4 -p- -A 172.16.227.128
+
+Speed: (slow) 1-5 (fast); 
+-p-: want to scan all ports. If we miss this out then it defaults to scanning top 1000. If u wanna scan certain ports: -p 80,443,53
+-A : all info: OS version, version, fingerprinting etc...
+
+
+UDP scan
+		nmap -T4 -sU -p 172.16.227.128
+
+-p because it makes it scan the top 1000 ports b/c UDP is connectionless protocol & takes ages to scan
+
+59.00.00
+nmap -help good to know
+sV probe
+
+Remove -A and running -p- is quicker than the otherway aroud. Once open ports foun, you can put the numbers in to the -p as before and perform a -A on those. Scripting here! Scripting can do speeeeed. Or you can do other things as u go.
+Probably doing scans while doing OSINT as we did earlier.
+
+Now scans are done u can look at open ports! We will now work on the ports and try to find exploits for the ports, we'll go and look into these. Look into the nmap -help and play around with different parameters and run it against the machine - it's your lab time! Make the most of it!!
+
+
+
+	
+	1.04.18 Enumerating HTTP/HTTPS
+	
+Ports that are interesting as an attacker:
+80 443		139 445
+
+Not usually remote code execution (RCE) on port 22 ssh i.e. no shell back. Not common to ssh.
+
+Low-hanging fruit is best! Get used to methodology
+Investiate 80 443 and potentially 139.
+
+First step, go to website IP --> Also https://IP b/c port 443. 
+
+- If you find a default web page e.g. the apache page seen at box IP, this is a finding. It offers insight into the web server, RHEL and the client hygiene (poor if the port is just open!)
+- Bad links also bad! See Kali notes 404 page information disclosure (extra unnec info)
+
+
+	1.13.10 Nikto - web vuln scanner
+	
+Sometime websites have good security and autoblocks nikto scans!
+
+	nikto -h http://IP
+	
+-h = host
+
+
+
+	1.19.20 More enumeration
+	
+dirbuster, dirb, gobuster - directory buster tools
+
+	dirbuster&
+	
+Run dirbuster as kali user. Put in http://IP:PORT
+Browse files > / > usr > share > wordlist > dirbuster > directory-list small.txt (if not finding much, go to medium)
+Put Threads to ~ 100 which worked for me. 200 was timing out too much
+
+- You can view the pages it's seen! 200 = OK 400 response code = not found 300 = redirect 500 = server error
+- Pages viewed by tree; open in browser and check webalyzer 2.01. Take notes on this.
+Once results back, dig through most of the folders, looking for stuff that seems interesting/juicy
+1.25.00
+If there is a web page, you can use burp and it's always work viewing page source code. You can look for comments, passwords, user accounts etc that may be in the source that shouldn't be
+
+
+
+-----
+1.33.00
+
+Take on board the methodologies; you can use different tools & software, you can come across different ports or vulns etc but always develop your methodology.
+Basics when looking at a website: service version information, backend directories, source code, potential vulnerability scanning w/ Nikto and any other info - wapplyzer 
+----
+
+		1.34.30 Enumerating SMB
+
+
+SMB = File Share Protocol -
+Metasplot - msfcoonsole
+Meta does Exploits, auxiliary (scanning & enum), post (post exploitation, i.e. after exploiting a machine), payloads.
+
+
+	> 'search smb' in metasploit
+	
+found: auxiliary/scanner/smb/smb_version 
+
+In terminal:
+	use auxiliary/scanner/smb/smb_version
+	
+	or
+	
+	use <number>
+	
+	
+Now using the program, you can type info to get info on the module.
+1.42.00
+	options - gives options!
+	
+
+RHOST = Remote host. The target. One host only accepted
+RHOSTS = Can accept multiple targets. In smb_version we can use CIDR notation e.g. /24 to scan a whole range.
+
+	set RHOST <IP> --> set RHOST 
+
+	run
+	
+	
+	
+BE VERY GOOD WITH FINDING & LOGGING INFORMATION/ENUMERATING!!
+
+	1.44.50 smbclient
+	
+tries to connect to the file share anonymously. Potentially see files!
+
+	smbclient -L \\\\172.16.227.128\\
+	or
+	smbclient -L \\172.16.227.128
+	(-L = list)
+character escaping
+ENTER as pwd
+
+This lists any file shares found, one of which was ADMIN$
+
+ 	smbclient \\\\172.16.227.128\\ADMIN$
+ 	
+ ENTER doesn't work as pwd. Try the other fileshare
+ 
+ 	smbclient \\\\172.16.227.128\\IPC$
+ 
+Pwd successful.
+1.47.00
+
+	> help 
+lists all stuff
+
+- See notes in kioptrix directory 
+
+
+
+	1.49.00 Enumerating SSH
+	
+Trying to connect to SSH; just trying to connect to SSH with a pwd attempt, it's classed as exploitation so don't do it
+
+	ssh 172.16.227.128 (usual way to do it)
+	
+Because the box is running old OS you get error no matching key exchange method found
+	ssh 172.16.227.128 -oKexAlgorithms=+<one of the key suggestions>
+	
+Sometimes a banner is exposed when connecting via SSH. In this case, there wasn't. Dead end as pwd needed
+
+--------------------------------------------------
+
+		1.53.13 Researching Potential Vulnerabilities
+		
+- mod_ssl/2.8.4; 80/443  potentially vulnerable to OpenFuck exploit
+https://www.exploit-db.com/exploits/764 		Buffer Overflow
+https://github.com/heltonWernik/OpenLuck - Actually works!
+
+- Apache httpd 1.3.20 
+Can check CVE, reds are critical. 
+
+
+2.04.20
+
+Can also search offline using searchsploit - don't be too specific e.g. looking for Samaba 2.21 exploit use:
+	
+		searchploit Samba 2
+
+Here we can look through for remote code execution & at least find an exploit name or get an idea.
+
+We just researching!
+
+2.08.43		Our notes so far
+
+See kioptrix.ctd in Kali for project notes & structure
+
+
+
+-------------------------------------------------------------------------
+	2.11.17		Scanning with Nessus
+
+
+Vulnerability scanner. Potentially used first! Takes time so while running try find info.
+
+nessus download - tenable
+
+home/kali/Downloads - depackage files -i = install
+	dpkg -i Nessus-10.6.1-ubuntu1404_amd64.deb
+	
+Start with /bin/systemctl start nessusd.service
+and go to https://kali:8834/ to configure your scanner
+
+Activation code: MAHN-RSKK-2F3X-L3JH-VULE
+
+2:15.00 Nessus installed
+You can scan an IP and get back a lot of information regarding vulnerabilities. We can also run advanced scans.
+
+2.22.00 Nessus Results
+Go to Scans > Settings > Disable grouping to see by severity.
+Add notes from here on all the issues.
+
+Take note of Critical and Mediums.
+
+You can download the nessus file & convert it to an excel file.
+Never trust your vuln scanner -> check it all yourself, don't report straight from Nessus, get info from a credible source.
+
